@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Styx — NCME 解构器
 // @namespace    styx-ncme
-// @version      3.2.0
-// @description  Styx — 继续医学教育自动化解构器。自动答题·倍速锁定·智能跳课·无人值守完成NCME课程。Duke Ewell Laboratory
+// @version      3.2.1
+// @description  Styx — 继续医学教育自动化解构器。自动答题·智能跳课·无人值守完成NCME课程。Duke Ewell Laboratory
 // @author       Xi Ewell · Duke Ewell Laboratory
 // @homepage     https://github.com/Trojan-Seahorse
 // @match        https://www.ncme.org.cn/player/record*
@@ -14,7 +14,7 @@
 // ==/UserScript==
 
 // ╔══════════════════════════════════════╗
-// ║  Styx — NCME 解构器  v3.2.0         ║
+// ║  Styx — NCME 解构器  v3.2.1         ║
 // ║  Xi Ewell · Duke Ewell Laboratory   ║
 // ║  github.com/Trojan-Seahorse         ║
 // ║  Licensed under CC BY-NC-ND 4.0     ║
@@ -99,7 +99,7 @@
       'filter:drop-shadow(0 0 4px rgba(124,58,237,0.3));';
     hdr.appendChild(nameEl);
     var ver = document.createElement('span');
-    ver.textContent = 'v3.2.0';
+    ver.textContent = 'v3.2.1';
     ver.style.cssText = 'font-size:10px;color:#64748b;margin-left:auto;font-weight:400;';
     hdr.appendChild(ver);
     p.appendChild(hdr);
@@ -275,6 +275,7 @@
       var currentCP = 0;
       var cpDone = false;
       var completeDone = false;
+      var nearEndTime = 0;
       var cpTimer = null;
 
       function startCheckpoint() {
@@ -322,6 +323,8 @@
       var lastPos = 0;
       var stuckCount = 0;
       var stuckThreshold = 30; // 30 poll cycles (~30s) without movement = stuck
+      // If waiting for platform confirmation, allow full timeout before stuck reload
+      if (nearEndTime > 0) stuckThreshold = 60;
 
       // Kick off checkpoint simulation once duration is known
       var checkpointStarted = false;
@@ -364,24 +367,35 @@
           lastPos = pos;
         }
 
-        // Detect completion — check both video ended and SDK position
-        if (!completeDone && video.duration) {
-          var nearEnd = pos >= video.duration - 3;
-          if (nearEnd || video.ended) {
-            completeDone = true;
-            clearInterval(mainLoop);
-            ui('nh-st', '⏭ 已完成'); ui('nh-pg', '100%');
-            setTimeout(function() { navToNextMaterial(vm); }, CFG.nextDelayMs);
-            return;
-          }
-        }
-
-        // Detect showNextModal (platform's own completion signal)
+        // Primary: showNextModal — platform's own completion signal
+        // The server confirms completion after uploadStudyRecord reports
+        // totalSecond >= completeDuration. We MUST wait for this signal,
+        // otherwise the platform won't register the video as watched.
         if (!completeDone && vm.showNextModal) {
           completeDone = true;
           clearInterval(mainLoop);
-          ui('nh-st', '✅ 已完成');
+          ui('nh-st', '✅ 已完成'); ui('nh-pg', '100%');
           setTimeout(function() { navToNextMaterial(vm); }, CFG.nextDelayMs);
+        }
+
+        // Fallback: position-based near-end detection
+        // Waits for showNextModal for up to 60s after reaching near-end,
+        // then forces navigation. Prevents getting stuck if platform
+        // completion signal never fires.
+        if (!completeDone && video.duration) {
+          var nearEnd = pos >= video.duration - 3;
+          if (nearEnd || video.ended) {
+            if (!nearEndTime) {
+              nearEndTime = Date.now();
+              ui('nh-st', '⏳ 等待平台确认...');
+            }
+            if (Date.now() - nearEndTime > 60000) {
+              completeDone = true;
+              clearInterval(mainLoop);
+              ui('nh-st', '⏭ 超时跳转', true);
+              setTimeout(function() { navToNextMaterial(vm); }, CFG.nextDelayMs);
+            }
+          }
         }
       }, CFG.pollMs);
     }, 500);
@@ -1902,7 +1916,7 @@ ui('nh-st','⏳ 等待完成测试...');
 
   function main() {
     var path = location.pathname;
-    console.log('[Styx] 脚本启动 v3.2.0, path=' + path);
+    console.log('[Styx] 脚本启动 v3.2.1, path=' + path);
     routePage(path);
   }
 

@@ -2,7 +2,7 @@
 
 > 继续医学教育自动化解构器。自动答题 · 智能跳课 · 进度模拟 · 无人值守完成 NCME 课程。
 
-**v3.2.0** | Tampermonkey / Violentmonkey 用户脚本
+**v3.2.1** | Tampermonkey / Violentmonkey 用户脚本
 
 ## 功能
 
