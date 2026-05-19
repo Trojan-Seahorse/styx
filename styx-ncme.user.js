@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Styx — NCME 解构器
 // @namespace    styx-ncme
-// @version      3.1.2
+// @version      3.2.0
 // @description  Styx — 继续医学教育自动化解构器。自动答题·倍速锁定·智能跳课·无人值守完成NCME课程。Duke Ewell Laboratory
 // @author       Xi Ewell · Duke Ewell Laboratory
 // @homepage     https://github.com/Trojan-Seahorse
@@ -14,7 +14,7 @@
 // ==/UserScript==
 
 // ╔══════════════════════════════════════╗
-// ║  Styx — NCME 解构器  v3.1.2         ║
+// ║  Styx — NCME 解构器  v3.2.0         ║
 // ║  Xi Ewell · Duke Ewell Laboratory   ║
 // ║  github.com/Trojan-Seahorse         ║
 // ║  Licensed under MIT                 ║
@@ -24,7 +24,6 @@
   'use strict';
 
   const CFG = {
-    rate: 16,
     pollMs: 1000,
     mountTimeoutMs: 20000,
     nextDelayMs: 1500,
@@ -99,7 +98,7 @@
       'filter:drop-shadow(0 0 4px rgba(124,58,237,0.3));';
     hdr.appendChild(nameEl);
     var ver = document.createElement('span');
-    ver.textContent = 'v3.1.2';
+    ver.textContent = 'v3.2.0';
     ver.style.cssText = 'font-size:10px;color:#64748b;margin-left:auto;font-weight:400;';
     hdr.appendChild(ver);
     p.appendChild(hdr);
@@ -137,7 +136,6 @@
       p.appendChild(row);
     }
 
-    addRow('⚡', 'nh-sp', CFG.rate + 'x', '#94a3b8');
     addRow('◷', 'nh-pg', '—', '#94a3b8');
     addRow('◆', 'nh-ln', '—', '#e2e8f0');
     addRow('⌛', 'nh-et', '—', '#64748b');
@@ -157,51 +155,14 @@
   }
 
   function ui(id, t, warn) {
-    var el = document.getElementById(id);
+    // nh-st → merged into nh-stage (v3.2.0)
+    var el = document.getElementById(id === 'nh-st' ? 'nh-stage' : id);
     if (!el) return;
     el.textContent = t;
     if (warn) el.style.color = '#ef4444';
     else if (id === 'nh-st') el.style.color = '#a78bfa';
     else el.style.color = '';
   }  // ═══════════════════════════════════════════════════
-  //  Speed Hijack
-  // ═══════════════════════════════════════════════════
-  function hijackSpeed(video) {
-    if (!video || video.__nh_done) return;
-    const base = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate');
-    // Store real setter for bypass — needed for checkpoint slow periods
-    video.__nh_realSet = base.set.bind(video);
-    Object.defineProperty(video, 'playbackRate', {
-      get() { return base.get.call(this); },
-      set(r) {
-        // Allow 1x bypass for checkpoint slow periods
-        if (this.__nh_allow1x) { base.set.call(this, r); return; }
-        if (r > 0 && r < CFG.rate) r = CFG.rate;
-        base.set.call(this, r);
-      },
-      configurable: true,
-    });
-    video.playbackRate = CFG.rate;
-    video.__nh_done = true;
-    console.log('[Styx] 倍速已锁定: ' + CFG.rate + 'x');
-  }
-
-  // ── Hijack CC SDK to hide real playback rate ──
-  function hijackCCSDK() {
-    var cp = window.cc_js_Player;
-    if (!cp || cp.__nh_hijacked) return;
-    cp.__nh_hijacked = true;
-
-    // Override getCurrRate to report 1x (normal speed)
-    if (cp.getCurrRate) {
-      var origGetCurrRate = cp.getCurrRate;
-      cp.getCurrRate = function() { return 1; };
-      cp.__nh_origGetCurrRate = origGetCurrRate;
-      console.log('[Styx] CC SDK getCurrRate 已劫持 → 1x');
-    }
-  }
-
-  // ═══════════════════════════════════════════════════
   //  URL Builder — Video
   // ═══════════════════════════════════════════════════
   function buildVideoURL(unitId, materialId, periodId, courseId) {
@@ -239,7 +200,6 @@
       const ci = vm.courseInfo;
       if (ci && ci.courseId && ci.periodId != null) {
         ui('nh-st', '→ 返回课程页');
-        setStage('◈', '返回课程');
         // v3.1.2: Set auto-return flag so initCourse knows to auto-proceed
         try { sessionStorage.setItem('ncme_auto_return', '1'); } catch(e) {}
         setTimeout(function() {
@@ -275,14 +235,11 @@
 
       // Anti-cheat bypass
       if (vm.checkRate) vm.checkRate = function(){};
-      hijackCCSDK(); // Hide real playback rate from CC SDK
-      setStage('▶', '倍速播放');
-      ui('nh-sp', CFG.rate+'x 锁定');
+      setStage('▶', '播放中');
       if (vm.currentDir) ui('nh-ln', vm.currentDir.directoryName||'--');
 
       // ── Autoplay ──
       video.muted = true;
-      hijackSpeed(video);
 
       // Use CC SDK's own play() for better compatibility
       var cp = window.cc_js_Player;
@@ -299,21 +256,17 @@
         playPromise.catch(function(e) {
           console.log('[Styx] autoplay blocked:', e.name);
           ui('nh-st', '🔊 点一下页面启用播放');
-          setStage('🔊', '等待交互');
           var resume = function() {
             video.muted = false;
             if (useSDK) { cp.play(); } else { video.play().catch(function(){}); }
             document.removeEventListener('click', resume);
             ui('nh-st', '▶ 播放中');
-            setStage('▶', '播放中');
           };
           document.addEventListener('click', resume, {once: true});
         });
       }
 
       // ── Progress Checkpoint Simulation ──
-      // v3.0.3: Keep __nh_allow1x=true for entire slow period, not just during the set call.
-      // The CC SDK / platform may re-set playbackRate after us → need bypass active the whole time.
       var checkpoints = CFG.checkpointPct.slice();
       var currentCP = 0;
       var cpDone = false;
@@ -323,47 +276,39 @@
       function startCheckpoint() {
         if (cpDone || currentCP >= checkpoints.length) {
           cpDone = true;
-          // ── Final stretch: seek → near end, play 1x to end ──
-          // v3.1.2: Cap final segment at 90s max (was 6% of duration, too long for long videos)
-          // Keep bypass ON permanently so SDK/platform can't force speed back up
-          video.__nh_allow1x = true;
-          video.__nh_realSet(1);
+          // ── Final stretch: seek near end, play to completion ──
+          // v3.2.0: Fixed 15s final segment, no speed hijack needed
+          video.playbackRate = 1;
           if (video.duration) {
-            var finalSegment = Math.min(90, Math.ceil(video.duration * 0.06));
+            var finalSegment = 15;
             var finalPos = Math.max(0, video.duration - finalSegment);
             if (useSDK) { cp.jumpToTime(finalPos); } else { video.currentTime = finalPos; }
           }
           if (useSDK) { cp.play(); }
-          ui('nh-et', '末段' + Math.round(finalPos === 0 ? 0 : (video.duration - finalPos)) + 's 1x');
-          ui('nh-sp', '1x (末段)');
+          ui('nh-et', '末段' + Math.round(finalPos === 0 ? 0 : (video.duration - finalPos)) + 's');
           ui('nh-st', '▶ 末段播放中');
           setStage('◈', '末段播放');
-          console.log('[Styx] 末段 1x 播放 (seek94%, pos=' + Math.round(video.currentTime) + ')');
+          console.log('[Styx] 末段 播放 (pos=' + Math.round(video.currentTime) + ')');
           return;
         }
 
         var target = video.duration * checkpoints[currentCP];
         if (isNaN(target) || target <= 0) return;
 
-        // ── Enter slow period: allow 1x, seek, play ──
-        video.__nh_allow1x = true;
-        video.__nh_realSet(1);
+        // Seek to checkpoint, play at normal speed
+        video.playbackRate = 1;
         if (useSDK) {
           cp.jumpToTime(target);
           cp.play();
         } else {
           video.currentTime = target;
         }
-        ui('nh-sp', '1x (检查点)');
         ui('nh-st', '⏳ 检查点 ' + (currentCP+1) + '/' + checkpoints.length);
         setStage('◷', '检查点 ' + (currentCP+1) + '/' + checkpoints.length);
         console.log('[Styx] 检查点 ' + (currentCP+1) + ': ' + Math.round(checkpoints[currentCP]*100) + '%  pos=' + Math.round(video.currentTime));
 
         clearTimeout(cpTimer);
         cpTimer = setTimeout(function() {
-          // ── Exit slow period: re-lock speed, advance checkpoint ──
-          video.__nh_allow1x = false;
-          video.__nh_realSet(CFG.rate);
           currentCP++;
           startCheckpoint();
         }, CFG.checkpointGapMs);
@@ -422,7 +367,6 @@
             completeDone = true;
             clearInterval(mainLoop);
             ui('nh-st', '⏭ 已完成'); ui('nh-pg', '100%');
-            setStage('✓', '完成');
             setTimeout(function() { navToNextMaterial(vm); }, CFG.nextDelayMs);
             return;
           }
@@ -433,7 +377,6 @@
           completeDone = true;
           clearInterval(mainLoop);
           ui('nh-st', '✅ 已完成');
-          setStage('✓', '完成');
           setTimeout(function() { navToNextMaterial(vm); }, CFG.nextDelayMs);
         }
       }, CFG.pollMs);
@@ -976,7 +919,7 @@
   function initTestPage() {
     createPanel();
     ui('nh-st', '检测到测试页面...');
-    ui('nh-sp', '自动答题中');
+    ui('nh-et', '自动答题中');
       setStage('✏', '自动答题');
 console.log('[Styx] 测试页初始化');
 
@@ -1416,7 +1359,6 @@ console.log('[Styx] 测试页初始化');
               ui('nh-st', '✅ 得分:' + score + ' (' + correct + '/' + (totalQ || '?') + ')');
               console.log('[Styx] 测试通过 得分=' + score);
 
-                setStage('★', '通过！'); // passed
 // v1.8: Full page navigation (not SPA back) + set auto_return flag
               // SPA handleBack() causes stale course data → dead loop
               setTimeout(function() {
@@ -1728,8 +1670,7 @@ console.log('[Styx] Report页初始化');
 
   function initCourse() {
     createPanel();
-    ui('nh-st','扫描课程...');
-      setStage('◈', '扫描课程');
+    setStage('◈', '扫描课程');
 console.log('[Styx] 课程页初始化');
 
     var t0 = Date.now();
@@ -1957,7 +1898,7 @@ ui('nh-st','⏳ 等待完成测试...');
 
   function main() {
     var path = location.pathname;
-    console.log('[Styx] 脚本启动 v3.1.2, path=' + path);
+    console.log('[Styx] 脚本启动 v3.2.0, path=' + path);
     routePage(path);
   }
 
