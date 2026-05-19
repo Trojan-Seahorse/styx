@@ -37,6 +37,14 @@
 
 > © 2026 Xi Ewell · Duke Ewell Laboratory
 
+## 免责声明
+
+本脚本由 AI 辅助编写，仅供学习交流之用。
+
+- 使用者自行承担全部使用风险，作者不对任何直接或间接损失负责
+- 禁止利用本脚本从事违法违规或侵害他人权益的行为
+- 使用即视为同意上述条款
+
 ---
 
 **Xi Ewell · Duke Ewell Laboratory** · [github.com/Trojan-Seahorse](https://github.com/Trojan-Seahorse)

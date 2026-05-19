@@ -18,6 +18,7 @@
 // ║  Xi Ewell · Duke Ewell Laboratory   ║
 // ║  github.com/Trojan-Seahorse         ║
 // ║  Licensed under CC BY-NC-ND 4.0     ║
+// ║  AI-assisted · 学习交流 · 风险自担   ║
 // ╚══════════════════════════════════════╝
 
 (function() {
