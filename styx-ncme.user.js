@@ -119,12 +119,14 @@
     p.appendChild(stage);
 
     // ── Info rows ──
-    function addRow(iconChar, id, val, color) {
+    function addRow(iconChar, id, val, color, iconColor, iconSize) {
       var row = document.createElement('div');
       row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:2px 0;';
       var ic = document.createElement('span');
       ic.textContent = iconChar;
-      ic.style.cssText = 'font-size:12px;width:16px;text-align:center;color:#64748b;flex-shrink:0;';
+      ic.style.cssText =
+        'font-size:' + (iconSize || '12px') + ';width:16px;text-align:center;' +
+        'color:' + (iconColor || '#64748b') + ';flex-shrink:0;';
       row.appendChild(ic);
       var valEl = document.createElement('span');
       valEl.id = id;
@@ -136,9 +138,9 @@
       p.appendChild(row);
     }
 
-    addRow('◷', 'nh-pg', '—', '#94a3b8');
-    addRow('◆', 'nh-ln', '—', '#e2e8f0');
-    addRow('⌛', 'nh-et', '—', '#64748b');
+    addRow('✦', 'nh-pg', '—', '#94a3b8', '#a78bfa', '12px');
+    addRow('❯', 'nh-ln', '—', '#e2e8f0', '#0d9488', '14px');
+    addRow('⏳', 'nh-et', '—', '#64748b');
 
     // ── Signature ──
     var sig = document.createElement('div');
