@@ -17,7 +17,7 @@
 // ║  Styx — NCME 解构器  v3.2.0         ║
 // ║  Xi Ewell · Duke Ewell Laboratory   ║
 // ║  github.com/Trojan-Seahorse         ║
-// ║  Licensed under MIT                 ║
+// ║  Licensed under CC BY-NC-ND 4.0     ║
 // ╚══════════════════════════════════════╝
 
 (function() {
@@ -126,7 +126,8 @@
       ic.textContent = iconChar;
       ic.style.cssText =
         'font-size:' + (iconSize || '12px') + ';width:16px;text-align:center;' +
-        'color:' + (iconColor || '#64748b') + ';flex-shrink:0;';
+        'color:' + (iconColor || '#64748b') + ';flex-shrink:0;' +
+        'text-shadow:0 0 0.4px currentColor;';
       row.appendChild(ic);
       var valEl = document.createElement('span');
       valEl.id = id;
@@ -138,9 +139,9 @@
       p.appendChild(row);
     }
 
-    addRow('✦', 'nh-pg', '—', '#94a3b8', '#a78bfa', '12px');
-    addRow('❯', 'nh-ln', '—', '#e2e8f0', '#0d9488', '14px');
-    addRow('⏳', 'nh-et', '—', '#64748b');
+    addRow('✦', 'nh-pg', '—', '#94a3b8', '#a78bfa', '13px');
+    addRow('❯', 'nh-ln', '—', '#e2e8f0', '#0d9488', '15px');
+    addRow('⏰', 'nh-et', '—', '#64748b', '#d97706', '13px');
 
     // ── Signature ──
     var sig = document.createElement('div');
@@ -306,7 +307,7 @@
           video.currentTime = target;
         }
         ui('nh-st', '⏳ 检查点 ' + (currentCP+1) + '/' + checkpoints.length);
-        setStage('◷', '检查点 ' + (currentCP+1) + '/' + checkpoints.length);
+        setStage('🚩', '检查点 ' + (currentCP+1) + '/' + checkpoints.length);
         console.log('[Styx] 检查点 ' + (currentCP+1) + ': ' + Math.round(checkpoints[currentCP]*100) + '%  pos=' + Math.round(video.currentTime));
 
         clearTimeout(cpTimer);

@@ -29,7 +29,13 @@
 
 ## 许可
 
-MIT License
+[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+
+- ✅ 个人使用、分享（需署名）
+- ❌ 修改、二创、演绎
+- ❌ 商业用途
+
+> © 2026 Xi Ewell · Duke Ewell Laboratory
 
 ---
 
