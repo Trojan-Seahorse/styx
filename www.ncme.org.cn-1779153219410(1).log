@@ -1,0 +1,28 @@
+hm.js:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+1eadfda.js:2 production process.env.NODE_ENV
+1eadfda.js:2 https://www.ncme.org.cn https://www.ncme.org.cn https://www.ncme.org.cn
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 销毁播放器实例
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:1845 [Styx] 脚本启动 v3.0, path=/player/record
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:64 [Styx] 创建面板...
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:154 [Styx] 面板已挂载
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:257 [Styx] 播放页初始化
+ff1dc64.js:1 播放器初始化完成即将播放时回调
+ff1dc64.js:1 0 'this.currentTime::::'
+ff1dc64.js:1 0 'this.currentTime::::'
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:195 [Styx] CC SDK getCurrRate 已劫持 → 1x
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:181 [Styx] 倍速已锁定: 16x
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:344 [Styx] 检查点 1: 25%  SDK pos=0
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:344 [Styx] 检查点 2: 50%  SDK pos=1143.367
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:344 [Styx] 检查点 3: 75%  SDK pos=1715.050499
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:344 [Styx] 检查点 4: 92%  SDK pos=2103.795279
+userscript.html?name=Styx-%25E2%2580%2594-NCME-%25E8%25A7%25A3%25E6%259E%2584%25E5%2599%25A8.user.js&id=da89bd82-28bb-435c-8044-4b6cd52d8612:327 [Styx] 末段正常速度播放
+h5player-3.6.1.js:1 Object
+(匿名) @ h5player-3.6.1.js:1
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 Object 'querydata::'
+ff1dc64.js:1 Object 'querydata::'
